@@ -56,7 +56,12 @@ if sys.version_info < (2, 7):
 # Setup imports depending on whether IronPython or CPython
 if sys.platform == 'win32' \
         or sys.platform == 'cli':
-    from _winreg import *
+    try:
+        # For Python 3.0 and later
+        from winreg import *
+    except ImportError:
+        # Fall back to Python 2
+        from _winreg import *
 
 
 def bytetohex(data):
