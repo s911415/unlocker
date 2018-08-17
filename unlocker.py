@@ -42,11 +42,10 @@ Offset  Length  Struct Type Description
 """
 
 from __future__ import print_function
+
 import codecs
 import os
-import six
 import struct
-import subprocess
 import sys
 
 if sys.version_info < (2, 7):
@@ -309,7 +308,7 @@ def patchbase(name):
     # Entry to search for in GOS table
     # Should work for 12 & 14 of Workstation...
     darwin = b'\x10\x00\x00\x00\x10\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00' \
-             '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+             b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
     # Read file into string variable
     base = f.read()
@@ -325,7 +324,14 @@ def patchbase(name):
         f.seek(offset + 32)
         flag = ord(f.read(1))
         flag = set_bit(flag, 0)
-        flag = chr(flag)
+
+        if sys.version_info > (3, 0):
+            # Python 3 code in this block
+            flag = bytes([flag])
+        else:
+            # Python 2 code in this block
+            flag = chr(flag)
+
         f.seek(offset + 32)
         f.write(flag)
         print('GOS Patched flag @: ' + hex(offset))
